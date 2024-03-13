@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ticTacToeApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+<body>
+    <div ng-controller="TicTacToeController" class="TicTacToeController">
+        <h1>Tic Tac Toe</h1>
+        <div ng-repeat="row in gameBoard">
+            <div class="row">
+                <div ng-repeat="cell in row track by $index" class="cell" ng-click="placeSymbol($parent.$index, $index)">
+                    {{ cell }}
+                </div>
+            </div>
+        </div>
+        <button ng-click="resetGame()">Reset Game</button>
+        <div class="winnerMessage">{{ winnerMessage }}</div>
+    </div>
+
+    <script>
+        angular.module('ticTacToeApp', [])
+        .controller('TicTacToeController', function($scope) {
+            $scope.gameBoard = [
+                ['-', '-', '-'],
+                ['-', '-', '-'],
+                ['-', '-', '-']
+            ];
+
+            $scope.currentPlayer = 'X';
+            $scope.winnerMessage = '';
+
+            $scope.placeSymbol = function(row, col) {
+                if ($scope.gameBoard[row][col] === '-' && !$scope.winnerMessage) {
+                    $scope.gameBoard[row][col] = $scope.currentPlayer;
+                    if ($scope.checkForWinner(row, col)) {
+                        $scope.winnerMessage = $scope.currentPlayer + ' wins!';
+                    } else {
+                        $scope.currentPlayer = $scope.currentPlayer === 'X' ? 'O' : 'X';
+                    }
+                }
+            };
+
+            $scope.checkForWinner = function(row, col) {
+                var symbol = $scope.gameBoard[row][col];
+
+                // Check row
+                var rowCount = 0;
+                for (var i = 0; i < 3; i++) {
+                    if ($scope.gameBoard[row][i] === symbol) {
+                        rowCount++;
+                    }
+                }
+                if (rowCount === 3) {
+                    return true;
+                }
+
+                // Check column
+                var colCount = 0;
+                for (var j = 0; j < 3; j++) {
+                    if ($scope.gameBoard[j][col] === symbol) {
+                        colCount++;
+                    }
+                }
+                if (colCount === 3) {
+                    return true;
+                }
+
+                // Check diagonals
+                if (row === col || row + col === 2) {
+                    var diagCount1 = 0;
+                    var diagCount2 = 0;
+                    for (var k = 0; k < 3; k++) {
+                        if ($scope.gameBoard[k][k] === symbol) {
+                            diagCount1++;
+                        }
+                        if ($scope.gameBoard[k][2 - k] === symbol) {
+                            diagCount2++;
+                        }
+                    }
+                    if (diagCount1 === 3 || diagCount2 === 3) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+
+            $scope.resetGame = function() {
+                $scope.gameBoard = [
+                    ['-', '-', '-'],
+                    ['-', '-', '-'],
+                    ['-', '-', '-']
+                ];
+                $scope.currentPlayer = 'X';
+                $scope.winnerMessage = '';
+            };
+        });
+    </script>
+    
+    <style>
+        body{
+            background-color: black;
+            color: white;
+        }
+
+        .TicTacToeController{
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+        }
+
+        .winnerMessage{
+            margin-top: 10px;
+            font-size: 30px;
+        }
+        .row {
+            display: flex;
+        }
+        .cell {
+            border: 1px solid white;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 40px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 5px 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</body>
+</html>
